@@ -27,7 +27,7 @@ if ($show_servers) {
         $stmt = $pdo->query("SELECT * FROM servers WHERE is_visible = 1 ORDER BY CASE WHEN game = 'discord' THEN 0 ELSE 1 END, game ASC, players DESC");
         $servers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        die("Hiba a szerverek lekérdezésekor: " . $e->getMessage());
+        die("Error querying servers: " . $e->getMessage());
     }
 }
 
@@ -60,7 +60,7 @@ require_once 'header.php';
 
 <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Közösségi Linkek (Linktree) szekció -->
+    <!-- Social Links (Linktree) section -->
     <?php if ($show_social && !empty($social_links)): ?>
     <div class="mb-12">
         <h2 class="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-2 flex items-center">
@@ -92,7 +92,7 @@ require_once 'header.php';
     </div>
     <?php endif; ?>
     
-    <!-- Média szekció: Twitch és YouTube élő/legújabb lejátszók -->
+    <!-- Media section: Twitch and YouTube live/latest players -->
     <?php if ($show_twitch || $show_youtube): ?>
     <div class="mb-12 grid grid-cols-1 <?php echo ($show_twitch && $show_youtube) ? 'xl:grid-cols-2' : ''; ?> gap-8">
         
@@ -137,7 +137,7 @@ require_once 'header.php';
     </div>
     <?php endif; ?>
 
-    <!-- Szerver lista szekció -->
+    <!-- Server list section -->
     <?php if ($show_servers): ?>
     <div class="mb-8 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-white"><?php echo __('server_list_title'); ?></h1>
@@ -257,7 +257,7 @@ require_once 'header.php';
                                 <?php endif; ?>
                             </td>
                             </tr>
-                            <!-- Lenyíló játékoslista sor -->
+                            <!-- Dropdown player list row -->
                             <tr id="players_row_<?php echo $server['id']; ?>" class="hidden bg-dark/30">
                                 <td colspan="6" class="px-6 py-4">
                                     <?php                                      $players_data = [];
@@ -365,9 +365,9 @@ require_once 'header.php';
                                                                                 $hours = floor($seconds / 3600);
                                                                                 $minutes = floor(($seconds % 3600) / 60);
                                                                                 if ($hours > 0) {
-                                                                                    echo sprintf("%dó %dp", $hours, $minutes);
+                                                                                    echo $lang === 'hu' ? sprintf("%dó %dp", $hours, $minutes) : sprintf("%dh %dm", $hours, $minutes);
                                                                                 } else {
-                                                                                    echo sprintf("%dp", $minutes);
+                                                                                    echo $lang === 'hu' ? sprintf("%dp", $minutes) : sprintf("%dm", $minutes);
                                                                                 }
                                                                             ?>
                                                                         </td>
@@ -413,7 +413,7 @@ require_once 'header.php';
     </div>
     <?php endif; ?>
     
-    <!-- Média szekció: Legnézettebb klippek és videók -->
+    <!-- Media section: Most viewed clips and videos -->
     <?php if ($show_twitch || $show_youtube): ?>
     <div class="mt-12 mb-12 grid grid-cols-1 <?php echo ($show_twitch && $show_youtube) ? 'xl:grid-cols-2' : ''; ?> gap-8">
         
@@ -460,16 +460,16 @@ require_once 'header.php';
     </div>
     <?php endif; ?>
 
-    <!-- Aktivitási statisztikák szekció -->
+    <!-- Activity statistics section -->
     <?php if ($show_activity && ($show_twitch || $show_youtube)): ?>
     <div class="mb-12 grid grid-cols-1 <?php echo ($show_twitch && $show_youtube) ? 'xl:grid-cols-2' : ''; ?> gap-8">
         
         <?php if ($show_twitch): ?>
-        <!-- Twitch legaktívabb chatelők -->
+        <!-- Twitch top active chatters -->
         <div class="bg-card shadow-xl rounded-lg border border-gray-800 p-6">
             <h2 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2 flex items-center">
                 <svg class="w-6 h-6 mr-2 text-purple-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
-                <?php echo __('twitch_top_chatters'); ?> <span class="text-xs text-gray-500 ml-2 mt-1 font-normal">(elmúlt 30 nap)</span>
+                <?php echo __('twitch_top_chatters'); ?> <span class="text-xs text-gray-500 ml-2 mt-1 font-normal">(<?php echo __('last_30_days'); ?>)</span>
             </h2>
             <?php
             $top_twitch_chatters = [];
@@ -520,11 +520,11 @@ require_once 'header.php';
         <?php endif; ?>
 
         <?php if ($show_youtube): ?>
-        <!-- Discord legaktívabb tagok -->
+        <!-- Discord top active members -->
         <div class="bg-card shadow-xl rounded-lg border border-gray-800 p-6">
             <h2 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2 flex items-center">
                 <svg class="w-6 h-6 mr-2 text-indigo-500" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.094 13.094 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 1-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z"/></svg>
-                <?php echo __('discord_top_users'); ?> <span class="text-xs text-gray-500 ml-2 mt-1 font-normal">(minden idők)</span>
+                <?php echo __('discord_top_users'); ?> <span class="text-xs text-gray-500 ml-2 mt-1 font-normal">(<?php echo __('all_time'); ?>)</span>
             </h2>
             <?php
             $top_discord_users = [];

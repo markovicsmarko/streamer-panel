@@ -303,5 +303,7 @@
   "admin_cron_msg_nem_futott_ujrainditva": "Not running (Restarted)",
   "admin_cron_msg_fut_online": "Running (Online)",
   "admin_cron_msg_api_hiba_json": "API error (JSON)",
-  "admin_cron_msg_elerhetetlen_api": "Unreachable API"
+  "admin_cron_msg_elerhetetlen_api": "Unreachable API",
+  "last_30_days": "last 30 days",
+  "all_time": "all time"
 }
