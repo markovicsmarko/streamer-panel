@@ -1,0 +1,36 @@
+<?php
+// --- STREAMERPANEL CENTRAL CONFIGURATION TEMPLATE ---
+// Copy this file to 'config.php' and fill in your details!
+
+// Security check: deny direct access
+if (basename($_SERVER['SCRIPT_FILENAME']) === 'config.php') {
+    header('HTTP/1.0 403 Forbidden');
+    exit('Access Denied');
+}
+
+// Database Credentials
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'your_database_name');
+define('DB_USER', 'your_database_user');
+define('DB_PASS', 'your_database_password');
+
+// Steam API Settings
+define('STEAM_API_KEY', 'YOUR_32_CHAR_STEAM_API_KEY');
+define('ADMIN_STEAM_ID', 'YOUR_17_DIGIT_STEAMID64'); // Users logging in with this Steam ID will automatically become superadmins
+
+// YouTube API Settings
+define('YT_API_KEY', 'YOUR_YOUTUBE_API_KEY');
+define('YT_CHANNEL_ID', 'YOUR_YOUTUBE_CHANNEL_ID');
+
+// Twitch API Settings
+define('TWITCH_CLIENT_ID', 'YOUR_TWITCH_CLIENT_ID');
+define('TWITCH_CLIENT_SECRET', 'YOUR_TWITCH_CLIENT_SECRET');
+define('TWITCH_USERNAME', 'your_twitch_username');
+
+// Discord Integration Settings (For engau.ge leaderboard)
+define('DISCORD_GUILD_ID', 'YOUR_DISCORD_GUILD_ID');
+define('STREAMER_DISCORD_ID', 'YOUR_STREAMER_DISCORD_ID'); // Streamer's Discord ID to filter them out of the community leaderboard
+
+// Cron Security Key (Required to run cron.php via web browser)
+define('CRON_KEY', 'YOUR_UNIQUE_SECRET_CRON_KEY');
+?>
