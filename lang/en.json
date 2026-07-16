@@ -305,5 +305,8 @@
   "admin_cron_msg_api_hiba_json": "API error (JSON)",
   "admin_cron_msg_elerhetetlen_api": "Unreachable API",
   "last_30_days": "last 30 days",
-  "all_time": "all time"
+  "all_time": "all time",
+  "server_list_bot_note": "* For Call of Duty servers, the list also includes the number of bots on the server in the player count.",
+  "admin_users_error_own_edit": "Error: You cannot modify your own permissions!",
+  "admin_users_self_edit_disabled": "Your account (Read-only)"
 }

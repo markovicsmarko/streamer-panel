@@ -174,12 +174,20 @@ if ($has_gameq_servers) {
             $player_list = [];
             $rcon_success = false;
 
-            // If it is a CoD server and RCON password is set,
-            // we try to retrieve the full player and bot list using RCON
+            // If it is a CoD or DayZ server and RCON password is set,
+            // we try to retrieve the full player list using RCON
             if ($server && in_array($server['game'], ['cod2', 'cod4', 'mw2', 'mw3']) && !empty($server['rcon_password'])) {
                 $rcon_response = send_cod_rcon($server['ip'], $server['port'], $server['rcon_password'], 'status');
                 if ($rcon_response && strpos($rcon_response, 'Hiba') === false && strpos($rcon_response, 'üres') === false) {
                     $player_list = parse_cod_status_players($rcon_response);
+                    $rcon_success = true;
+                }
+            } elseif ($server && $server['game'] === 'dayz' && !empty($server['rcon_password'])) {
+                $be = new BattlEyeRcon($server['ip'], $server['port'], $server['rcon_password']);
+                $rcon_response = $be->sendCommand('players');
+                if ($rcon_response && strpos($rcon_response, 'Error') === false && strpos($rcon_response, 'Hiba') === false && strpos($rcon_response, 'empty') === false) {
+                    $player_list = parse_battleye_status_players($rcon_response);
+                    $players = count($player_list);
                     $rcon_success = true;
                 }
             }
@@ -213,9 +221,9 @@ if ($has_gameq_servers) {
 
             $updateOnline->execute([$real_name, $map, $players, $max_players, $player_list_json, $server_id]);
             
-            if ($server && in_array($server['game'], ['cod2', 'cod4', 'mw2', 'mw3'])) {
+            if ($server && in_array($server['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'dayz'])) {
                 if (!empty($server['rcon_password'])) {
-                    $rcon_status = $rcon_success ? "<span class='success'>Success (RCON)</span>" : "<span class='error'>Failed (RCON error)</span>";
+                    $rcon_status = $rcon_success ? "<span class='success'>Success (RCON)</span>" : "<span class='error'>Failed (" . htmlspecialchars($rcon_response ?? 'RCON error') . ")</span>";
                 } else {
                     $rcon_status = "<span class='info'>No password specified (GameQ)</span>";
                 }

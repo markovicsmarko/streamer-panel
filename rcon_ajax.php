@@ -56,7 +56,7 @@ if (!$server) {
 }
 
 // Security: only allow for supported games
-$supported_games = ['cod2', 'cod4', 'mw2', 'mw3', 'cs2'];
+$supported_games = ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz'];
 if (!in_array($server['game'], $supported_games)) {
     echo json_encode([
         'status' => 'error',
@@ -77,6 +77,9 @@ if (empty($server['rcon_password'])) {
 // 5. Send RCON command
 if ($server['game'] === 'cs2') {
     $rcon = new SourceRcon($server['ip'], $server['port'], $server['rcon_password']);
+    $response = $rcon->sendCommand($command);
+} elseif ($server['game'] === 'dayz') {
+    $rcon = new BattlEyeRcon($server['ip'], $server['port'], $server['rcon_password']);
     $response = $rcon->sendCommand($command);
 } else {
     $response = send_cod_rcon($server['ip'], $server['port'], $server['rcon_password'], $command);

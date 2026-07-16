@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_server'])) {
 
     if (empty($error_msg) && !empty($game) && !empty($name) && !empty($ip)) {
         $rcon_password = isset($_POST['rcon_password']) ? trim($_POST['rcon_password']) : null;
-        if (empty($rcon_password) || !in_array($game, ['cod2', 'cod4', 'mw2', 'mw3', 'cs2'])) {
+        if (empty($rcon_password) || !in_array($game, ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz'])) {
             $rcon_password = null;
         }
         try {
@@ -337,6 +337,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user'])) {
     try {
         if ($user_steam_id === ADMIN_STEAM_ID) {
             $error_msg = __('admin_users_error_self_edit');
+        } elseif ($user_steam_id === $_SESSION['steam_id']) {
+            $error_msg = __('admin_users_error_own_edit');
         } else {
             if ($role === 'sadmin' && $_SESSION['role'] !== 'sadmin') {
                 $role = 'admin';
@@ -370,7 +372,7 @@ if (empty($available_tabs)) {
     die("Hiba: Nincs jogosultságod egyik adminisztrációs modulhoz sem.");
 }
 
-$active_tab = isset($_GET['tab']) && isset($available_tabs[$_GET['tab']]) ? $_GET['tab'] : array_key_first($available_tabs);
+$active_tab = isset($_GET['tab']) && isset($available_tabs[$_GET['tab']]) ? $_GET['tab'] : (isset($_GET['edit_rcon']) && isset($available_tabs['servers']) ? 'servers' : array_key_first($available_tabs));
 
 // Tab-specific data loading (Optimized)
 $servers = [];

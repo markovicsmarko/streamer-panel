@@ -345,7 +345,9 @@ require_once 'header.php';
                                                         <thead class="bg-dark/60">
                                                             <tr>
                                                                 <th scope="col" class="px-4 py-2.5 text-left font-semibold text-gray-400 uppercase tracking-wider"><?php echo __('table_player_name'); ?></th>
-                                                                <th scope="col" class="px-4 py-2.5 text-center font-semibold text-gray-400 uppercase tracking-wider"><?php echo __('table_player_score'); ?></th>
+                                                                <?php if ($server['game'] !== 'dayz' && $server['game'] !== 'minecraft'): ?>
+                                                                    <th scope="col" class="px-4 py-2.5 text-center font-semibold text-gray-400 uppercase tracking-wider"><?php echo __('table_player_score'); ?></th>
+                                                                <?php endif; ?>
                                                                 <?php if ($server['game'] === 'cs2'): ?>
                                                                     <th scope="col" class="px-4 py-2.5 text-center font-semibold text-gray-400 uppercase tracking-wider"><?php echo __('table_player_time'); ?></th>
                                                                 <?php elseif ($server['game'] !== 'minecraft'): ?>
@@ -357,7 +359,9 @@ require_once 'header.php';
                                                             <?php foreach ($players_data as $p): ?>
                                                                 <tr class="hover:bg-gray-800/30 transition-colors">
                                                                     <td data-label="<?php echo __('table_player_name'); ?>" class="px-4 py-2 text-white font-medium"><?php echo htmlspecialchars($p['name']); ?></td>
-                                                                    <td data-label="<?php echo __('table_player_score'); ?>" class="px-4 py-2 text-center text-gray-300 font-mono"><?php echo $p['score']; ?></td>
+                                                                    <?php if ($server['game'] !== 'dayz' && $server['game'] !== 'minecraft'): ?>
+                                                                        <td data-label="<?php echo __('table_player_score'); ?>" class="px-4 py-2 text-center text-gray-300 font-mono"><?php echo $p['score']; ?></td>
+                                                                    <?php endif; ?>
                                                                     <?php if ($server['game'] === 'cs2'): ?>
                                                                         <td data-label="<?php echo __('table_player_time'); ?>" class="px-4 py-2 text-center text-gray-400 font-mono">
                                                                             <?php 
@@ -411,6 +415,9 @@ require_once 'header.php';
             </table>
         </div>
     </div>
+    <p class="text-xs text-gray-500 mb-12">
+        <?php echo __('server_list_bot_note'); ?>
+    </p>
     <?php endif; ?>
     
     <!-- Media section: Most viewed clips and videos -->

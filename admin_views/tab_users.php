@@ -49,13 +49,13 @@
                         </td>
                         <!-- Actions -->
                         <td class="px-4 py-3 whitespace-nowrap text-center">
-                            <?php if ($u['steam_id'] !== ADMIN_STEAM_ID): ?>
+                            <?php if ($u['steam_id'] !== ADMIN_STEAM_ID && $u['steam_id'] !== $_SESSION['steam_id']): ?>
                                 <button onclick="openEditUserModal(<?php echo htmlspecialchars(json_encode($u)); ?>)" 
-                                        class="bg-indigo-900/30 hover:bg-indigo-900/60 text-indigo-300 px-3 py-1 rounded text-xs font-semibold border border-indigo-700/50 transition-colors">
+                                        class="text-xs bg-primary hover:bg-blue-600 text-white font-bold py-1 px-3 rounded transition-colors shadow-sm">
                                     <i class="fas fa-edit mr-1"></i> <?php echo __('admin_users_btn_edit'); ?>
                                 </button>
                             <?php else: ?>
-                                <span class="text-gray-500 italic text-[11px]"><?php echo __('admin_users_system_admin'); ?></span>
+                                <span class="text-gray-500 italic text-[11px]"><?php echo $u['steam_id'] === ADMIN_STEAM_ID ? __('admin_users_system_admin') : __('admin_users_self_edit_disabled'); ?></span>
                             <?php endif; ?>
                         </td>
                     </tr>

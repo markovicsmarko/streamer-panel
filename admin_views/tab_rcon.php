@@ -16,7 +16,7 @@
                     <?php 
                     $has_rcon_servers = false;
                     foreach ($servers as $s): 
-                        if (in_array($s['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2']) && !empty($s['rcon_password'])):
+                        if (in_array($s['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz']) && !empty($s['rcon_password'])):
                             $has_rcon_servers = true;
                     ?>
                         <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['name']); ?> (<?php echo strtoupper($s['game']); ?>)</option>

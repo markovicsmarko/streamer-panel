@@ -20,7 +20,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="admin" method="POST" class="space-y-4">
+        <form action="admin?tab=links" method="POST" class="space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             
             <div>
@@ -53,7 +53,7 @@
     <div class="lg:col-span-2 bg-card shadow-xl rounded-xl border border-gray-800 p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><?php echo __('admin_managed_header_links'); ?></h3>
         
-        <form action="admin" method="POST">
+        <form action="admin?tab=links" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             
             <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
@@ -83,7 +83,7 @@
                             </div>
                             
                             <div class="flex justify-end lg:border-l lg:border-gray-800 lg:pl-3 mt-1 lg:mt-0">
-                                <a href="admin?delete_link=<?php echo $l['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_link')); ?>');" class="text-red-500 hover:text-white bg-red-900/20 hover:bg-red-600 px-3 py-1.5 rounded font-bold text-xs transition-colors whitespace-nowrap flex items-center shadow-sm">
+                                <a href="admin?tab=links&delete_link=<?php echo $l['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_link')); ?>');" class="text-red-500 hover:text-white bg-red-900/20 hover:bg-red-600 px-3 py-1.5 rounded font-bold text-xs transition-colors whitespace-nowrap flex items-center shadow-sm">
                                     <?php echo __('admin_btn_delete'); ?>
                                 </a>
                             </div>
@@ -117,7 +117,7 @@
     <div class="lg:col-span-1 bg-card shadow-xl rounded-xl border border-gray-800 p-6">
         <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><?php echo __('admin_add_social_link'); ?></h3>
         
-        <form action="admin" method="POST" class="space-y-4">
+        <form action="admin?tab=links" method="POST" class="space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             
             <div>
@@ -165,7 +165,7 @@
     <div class="lg:col-span-2 bg-card shadow-xl rounded-xl border border-gray-800 p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><?php echo __('admin_managed_social_links'); ?></h3>
         
-        <form action="admin" method="POST">
+        <form action="admin?tab=links" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             
             <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
@@ -214,7 +214,7 @@
                                 </div>
                                 
                                 <div class="flex justify-end lg:border-l lg:border-gray-800 lg:pl-3 mt-1 lg:mt-0">
-                                    <a href="admin?delete_social_link=<?php echo $l['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_social')); ?>');" class="text-red-500 hover:text-white bg-red-900/20 hover:bg-red-600 px-3 py-1.5 rounded font-bold text-xs transition-colors whitespace-nowrap flex items-center shadow-sm">
+                                    <a href="admin?tab=links&delete_social_link=<?php echo $l['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_social')); ?>');" class="text-red-500 hover:text-white bg-red-900/20 hover:bg-red-600 px-3 py-1.5 rounded font-bold text-xs transition-colors whitespace-nowrap flex items-center shadow-sm">
                                         <?php echo __('admin_btn_delete'); ?>
                                     </a>
                                 </div>

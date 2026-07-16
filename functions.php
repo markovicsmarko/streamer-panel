@@ -341,4 +341,176 @@ class SourceRcon {
         return ['id' => $id, 'type' => $type, 'body' => $body];
     }
 }
-?>
+
+/**
+ * BattlEye RCON Protocol Class for DayZ
+ */
+class BattlEyeRcon {
+    private $ip;
+    private $port;
+    private $password;
+    private $socket;
+    private $sequence = 0;
+
+    public function __construct($ip, $port, $password) {
+        $this->ip = $ip;
+        $port = (int)$port;
+        // DayZ game port defaults to ending in 02 (e.g., 2302).
+        // The corresponding BattlEye RCON port is typically Game Port + 3 (e.g., 2305).
+        if ($port % 100 === 2) {
+            $port += 3;
+        }
+        $this->port = $port;
+        $this->password = $password;
+    }
+
+    private function connect() {
+        $this->socket = @fsockopen("udp://{$this->ip}", $this->port, $errno, $errstr, 2);
+        if (!$this->socket) {
+            return false;
+        }
+        @stream_set_timeout($this->socket, 2);
+        return true;
+    }
+
+    private function makePacket($type, $payload = '', $seq = null) {
+        if ($type === 0x00) {
+            // Login: Type (0x00) + Password
+            $body = chr(0xFF) . chr($type) . $payload;
+        } else {
+            // Command: Type (0x01) + Sequence + Command
+            $body = chr(0xFF) . chr($type) . chr($seq) . $payload;
+        }
+        
+        $checksum = crc32($body);
+        return "BE" . pack("V", $checksum) . $body;
+    }
+
+    public function sendCommand($command) {
+        if (!$this->connect()) {
+            return "Error connecting.";
+        }
+
+        // 1. Authenticate
+        $loginPacket = $this->makePacket(0x00, $this->password);
+        @fwrite($this->socket, $loginPacket);
+        
+        $loginTimeout = time() + 2;
+        $authenticated = false;
+        $authError = "Error: The server did not respond to the login request.";
+        
+        while (time() < $loginTimeout) {
+            $response = @fread($this->socket, 4096);
+            if (!$response) {
+                break;
+            }
+            if (strlen($response) >= 9) {
+                $type = ord($response[7]);
+                $status = ord($response[8]);
+                
+                if ($type === 0x00) {
+                    if ($status === 0x01) {
+                        $authenticated = true;
+                    } else {
+                        $authError = "Error: Authentication failed! Invalid RCON password.";
+                    }
+                    break;
+                } elseif ($type === 0x02) {
+                    // ACK any server message received during login
+                    $ackPacket = $this->makePacket(0x02, '', $status);
+                    @fwrite($this->socket, $ackPacket);
+                }
+            }
+        }
+        
+        if (!$authenticated) {
+            @fclose($this->socket);
+            return $authError;
+        }
+
+        // 2. Send Command
+        $seq = $this->sequence++;
+        $cmdPacket = $this->makePacket(0x01, $command, $seq);
+        @fwrite($this->socket, $cmdPacket);
+
+        $result = '';
+        $timeout = time() + 2;
+        
+        while (time() < $timeout) {
+            $respPacket = @fread($this->socket, 8192);
+            if ($respPacket) {
+                if (strlen($respPacket) >= 9) {
+                    $respType = ord($respPacket[7]);
+                    $respSeq = ord($respPacket[8]);
+                    
+                    if ($respType === 0x01 && $respSeq === $seq) {
+                        // This is the command response packet!
+                        // In BattlEye protocol, command response payload starts directly at index 9.
+                        $result .= substr($respPacket, 9);
+                        
+                        // Check if there are more fragments
+                        $read = [$this->socket];
+                        $write = null;
+                        $except = null;
+                        if (@stream_select($read, $write, $except, 0, 100000) > 0) {
+                            continue;
+                        } else {
+                            break;
+                        }
+                    } elseif ($respType === 0x02) {
+                        // This is an asynchronous server message (chat log, admin login, etc.)
+                        // We MUST acknowledge it (ACK) so the server stops re-sending it.
+                        // The ACK packet type for a Server Message (0x02) is 0x02.
+                        $ackPacket = $this->makePacket(0x02, '', $respSeq);
+                        @fwrite($this->socket, $ackPacket);
+                        
+                        // Check if the command response is already in the queue
+                        $read = [$this->socket];
+                        $write = null;
+                        $except = null;
+                        if (@stream_select($read, $write, $except, 0, 100000) > 0) {
+                            continue;
+                        }
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+
+        @fclose($this->socket);
+        return trim($result);
+    }
+}
+
+/**
+ * Parses BattlEye 'players' command output
+ */
+function parse_battleye_status_players($status_text) {
+    $players = [];
+    $lines = explode("\n", $status_text);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (empty($line) || 
+            strpos($line, 'Players on server') !== false || 
+            strpos($line, '---') !== false || 
+            strpos($line, 'players total') !== false ||
+            preg_match('/^#\s+name/i', $line) ||
+            preg_match('/^#\s+id/i', $line)) {
+            continue;
+        }
+
+        if (preg_match('/^(\d+)\s+(\S+)\s+(?:(-?\d+)\s+)?([a-fA-F0-9]+(?:\([^\)]+\))?)\s+(.+)$/', $line, $m)) {
+            $name = trim($m[5]);
+            $name = trim($name, '"');
+            $ping = (int)$m[3];
+            $players[] = [
+                'name' => $name,
+                'score' => 0,
+                'ping' => $ping < 0 ? 0 : $ping,
+                'time' => ''
+            ];
+        }
+    }
+    return $players;
+}

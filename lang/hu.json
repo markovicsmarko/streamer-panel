@@ -305,5 +305,8 @@
   "admin_cron_msg_api_hiba_json": "API hiba (JSON)",
   "admin_cron_msg_elerhetetlen_api": "Elérhetetlen API",
   "last_30_days": "elmúlt 30 nap",
-  "all_time": "minden idők"
+  "all_time": "minden idők",
+  "server_list_bot_note": "* Call of Duty szervereknél a szerveren lévő botok számát is beleszámolja a játékos számba a lista.",
+  "admin_users_error_own_edit": "Hiba: A saját jogosultságaidat nem módosíthatod!",
+  "admin_users_self_edit_disabled": "Saját fiók (Nem módosítható)"
 }

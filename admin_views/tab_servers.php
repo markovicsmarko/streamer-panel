@@ -10,7 +10,7 @@
         <div class="bg-card shadow-xl rounded-xl border border-gray-800 p-6">
             <h3 class="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-2"><?php echo __('admin_add_server'); ?></h3>
         
-        <form action="admin" method="POST" class="space-y-4">
+        <form action="admin?tab=servers" method="POST" class="space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             
             <div>
@@ -64,7 +64,7 @@
         </form>
     </div>
 
-    <?php if ($edit_server && in_array($edit_server['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2'])): ?>
+    <?php if ($edit_server && in_array($edit_server['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz'])): ?>
     <!-- Edit RCON Password Card -->
     <div class="bg-card shadow-xl rounded-xl border border-yellow-800/50 p-6">
         <h3 class="text-lg font-bold text-white mb-4 border-b border-yellow-700/50 pb-2 flex items-center justify-between">
@@ -72,7 +72,7 @@
             <span class="text-xs bg-yellow-900/50 text-yellow-400 border border-yellow-800 px-2 py-0.5 rounded uppercase font-mono"><?php echo htmlspecialchars($edit_server['game']); ?></span>
         </h3>
         <p class="text-xs text-gray-400 mb-4 font-semibold"><?php echo __('admin_rcon_edit_desc', ['{server}' => htmlspecialchars($edit_server['name'])]); ?></p>
-        <form action="admin" method="POST" class="space-y-4">
+        <form action="admin?tab=servers" method="POST" class="space-y-4">
             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
             <input type="hidden" name="server_id" value="<?php echo $edit_server['id']; ?>">
             <div>
@@ -83,7 +83,7 @@
                 <button type="submit" name="update_rcon" class="flex-1 bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-md transition-colors shadow-lg text-sm">
                     <?php echo __('admin_rcon_btn_save'); ?>
                 </button>
-                <a href="admin" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-md transition-colors text-sm text-center border border-gray-700">
+                <a href="admin?tab=servers" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-md transition-colors text-sm text-center border border-gray-700">
                     <?php echo __('admin_rcon_btn_cancel'); ?>
                 </a>
             </div>
@@ -138,12 +138,12 @@
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex justify-end gap-2">
-                                            <?php if (in_array($server['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2'])): ?>
-                                                <a href="admin?edit_rcon=<?php echo $server['id']; ?>" class="text-yellow-500 hover:text-yellow-400 bg-yellow-900/20 px-2 py-1 rounded hover:bg-yellow-900/40 inline-block text-xs font-bold transition-colors" title="<?php echo htmlspecialchars(__('admin_title_rcon_edit')); ?>">
+                                            <?php if (in_array($server['game'], ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz'])): ?>
+                                                <a href="admin?tab=servers&edit_rcon=<?php echo $server['id']; ?>" class="text-yellow-500 hover:text-yellow-400 bg-yellow-900/20 px-2 py-1 rounded hover:bg-yellow-900/40 inline-block text-xs font-bold transition-colors" title="<?php echo htmlspecialchars(__('admin_title_rcon_edit')); ?>">
                                                     <i class="fas fa-key text-[10px]"></i>
                                                 </a>
                                             <?php endif; ?>
-                                            <a href="admin?delete=<?php echo $server['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_server')); ?>');" class="text-red-500 hover:text-red-400 bg-red-900/20 px-3 py-1 rounded hover:bg-red-900/40 inline-block text-xs font-bold transition-colors">
+                                            <a href="admin?tab=servers&delete=<?php echo $server['id']; ?>&csrf_token=<?php echo $_SESSION['csrf_token']; ?>" onclick="return confirm('<?php echo addslashes(__('admin_confirm_delete_server')); ?>');" class="text-red-500 hover:text-red-400 bg-red-900/20 px-3 py-1 rounded hover:bg-red-900/40 inline-block text-xs font-bold transition-colors">
                                                 <?php echo __('admin_btn_delete'); ?>
                                             </a>
                                         </div>
@@ -163,3 +163,38 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleDiscordFields() {
+    const select = document.getElementById('game_select');
+    if (!select) return;
+    const game = select.value;
+    const discordField = document.getElementById('discord_field');
+    const ipPortFields = document.getElementById('ip_port_fields');
+    const rconField = document.getElementById('rcon_field');
+    const ipInput = document.getElementById('server_ip');
+    const portInput = document.getElementById('server_port');
+    
+    const rconGames = ['cod2', 'cod4', 'mw2', 'mw3', 'cs2', 'dayz'];
+    
+    if (game === 'discord') {
+        if (discordField) discordField.style.display = 'block';
+        if (ipPortFields) ipPortFields.style.display = 'none';
+        if (rconField) rconField.style.display = 'none';
+        if (ipInput) ipInput.required = false;
+        if (portInput) portInput.required = false;
+    } else {
+        if (discordField) discordField.style.display = 'none';
+        if (ipPortFields) ipPortFields.style.display = 'block';
+        if (ipInput) ipInput.required = true;
+        if (portInput) portInput.required = true;
+        
+        if (rconGames.includes(game)) {
+            if (rconField) rconField.style.display = 'block';
+        } else {
+            if (rconField) rconField.style.display = 'none';
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', toggleDiscordFields);
+</script>
